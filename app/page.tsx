@@ -1,72 +1,114 @@
-import Link from "next/link";
-import { Header } from "./components/header";
+'use client';
 
-export default function Home() {
+import { useState } from 'react';
+import Header from '@/components/header';
+
+const MOCK_BOOKS = [
+  {
+    id: '1',
+    title: 'The Time Machine',
+    author: 'H.G. Wells',
+    genre: 'Classics',
+    cover: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    id: '2',
+    title: 'Pride and Prejudice',
+    author: 'Jane Austen',
+    genre: 'Fiction',
+    cover: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    id: '3',
+    title: 'Meditations',
+    author: 'Marcus Aurelius',
+    genre: 'Philosophy',
+    cover: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    id: '4',
+    title: 'Leaves of Grass',
+    author: 'Walt Whitman',
+    genre: 'Poetry',
+    cover: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=600&q=80',
+  },
+];
+
+const GENRES = ['All', 'Classics', 'Fiction', 'Philosophy', 'Poetry', 'Essays'];
+
+export default function StacksPage() {
+  const [selectedGenre, setSelectedGenre] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredBooks = MOCK_BOOKS.filter((book) => {
+    const matchesGenre = selectedGenre === 'All' || book.genre === selectedGenre;
+    const matchesSearch =
+      book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      book.author.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesGenre && matchesSearch;
+  });
+
   return (
-    <div className="relative flex min-h-full flex-1 flex-col overflow-hidden bg-[#FAF8F5] text-[#2C2623] dark:bg-[#1C1816] dark:text-[#F3ECE6]">
-      <div className="grain pointer-events-none absolute inset-0 opacity-70 dark:opacity-30" />
+    <div className="min-h-screen bg-[#FAF8F5] text-[#2C2623] font-sans">
       <Header />
 
-      <main className="relative mx-auto grid w-full max-w-6xl flex-1 items-center gap-12 px-5 py-12 sm:px-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-8 lg:py-16">
-        <section className="max-w-xl">
-          <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-[#2C2623]/70 dark:text-[#F3ECE6]/70">
-            A considered reading life
+      <main className="max-w-6xl mx-auto px-8 py-12">
+        {/* Hero Section */}
+        <div className="mb-12 border-b border-[#E5E0D8] pb-8">
+          <h1 className="font-serif text-4xl font-normal tracking-tight mb-3">The Stacks</h1>
+          <p className="text-[#6E655F] text-lg max-w-xl font-light">
+            Explore our curated collection of timeless literature and modern classics.
           </p>
-          <h1 className="mt-5 font-serif text-[3.15rem] font-semibold leading-[0.95] tracking-[-0.03em] text-[#2C2623] sm:text-7xl dark:text-[#F3ECE6]">
-            Stay with the story.
-          </h1>
-          <p className="mt-6 max-w-md font-serif text-lg leading-8 text-[#2C2623]/75 sm:text-xl dark:text-[#F3ECE6]/75">
-            Wells House is a quiet home for books with something to say. Read
-            slowly. Return often.
-          </p>
-          <Link
-            href="/catalogue"
-            className="mt-9 inline-flex items-center rounded-full bg-[#2C2623] px-6 py-3.5 text-sm tracking-wide text-[#FAF8F5] transition hover:bg-[#3a322e] dark:bg-[#F3ECE6] dark:text-[#1C1816] dark:hover:bg-white"
-          >
-            Explore the catalogue →
-          </Link>
-        </section>
+        </div>
 
-        <section
-          className="relative mx-auto flex min-h-[460px] w-full max-w-[440px] items-center justify-center pb-6 sm:min-h-[520px]"
-          aria-label="Featured titles"
-        >
-          <div className="absolute h-64 w-64 rounded-full bg-[#e8d8c8]/70 blur-3xl dark:bg-[#3a2d26]/80 sm:h-80 sm:w-80" />
+        {/* Filter Controls */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
+          <input
+            type="text"
+            placeholder="Search by title or author..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="bg-white border border-[#E5E0D8] rounded-none px-4 py-2 text-sm w-full md:w-80 focus:outline-none focus:border-[#2C2623]"
+          />
 
-          <article className="absolute left-0 top-[4%] z-10 w-[56%] max-w-[250px] -rotate-[12deg] overflow-hidden rounded-[4px] bg-[#C45C3E] shadow-[12px_22px_40px_rgba(44,38,35,0.22)] sm:w-[250px]">
-            <div className="absolute inset-y-0 left-0 w-[10px] bg-black/15" />
-            <div className="flex aspect-[2/3] flex-col justify-between p-5 pl-7 text-[#FAF8F5]">
-              <div>
-                <h2 className="font-serif text-[1.85rem] leading-[1.05] tracking-tight">
-                  The Tide
-                </h2>
-                <p className="mt-3 text-xs tracking-wide opacity-85">
-                  Mara Venn
-                </p>
+          <div className="flex flex-wrap gap-2">
+            {GENRES.map((genre) => (
+              <button
+                key={genre}
+                onClick={() => setSelectedGenre(genre)}
+                className={`px-4 py-1.5 text-xs tracking-wider uppercase transition-colors ${
+                  selectedGenre === genre
+                    ? 'bg-[#2C2623] text-[#FAF8F5]'
+                    : 'bg-white text-[#5C534E] border border-[#E5E0D8] hover:border-[#2C2623]'
+                }`}
+              >
+                {genre}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Book Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          {filteredBooks.map((book) => (
+            <div key={book.id} className="group flex flex-col cursor-pointer">
+              <div className="aspect-[2/3] bg-[#EAE6DF] mb-4 overflow-hidden border border-[#E5E0D8]">
+                <img
+                  src={book.cover}
+                  alt={book.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
               </div>
-              <p className="text-[10px] uppercase tracking-[0.22em] opacity-80">
-                Novel
-              </p>
+              <span className="text-[10px] uppercase tracking-widest text-[#8C827A] mb-1">
+                {book.genre}
+              </span>
+              <h3 className="font-serif text-lg font-medium text-[#2C2623] leading-snug mb-1">
+                {book.title}
+              </h3>
+              <p className="text-xs text-[#6E655F] font-light">{book.author}</p>
             </div>
-          </article>
-
-          <article className="absolute bottom-[2%] right-0 z-20 w-[58%] max-w-[258px] rotate-[9deg] overflow-hidden rounded-[4px] bg-[#1A4548] shadow-[14px_24px_44px_rgba(44,38,35,0.28)] sm:w-[258px]">
-            <div className="absolute inset-y-0 left-0 w-[10px] bg-black/20" />
-            <div className="flex aspect-[2/3] flex-col justify-between p-5 pl-7 text-[#E8F0EE]">
-              <div>
-                <h2 className="font-serif text-[1.85rem] leading-[1.05] tracking-tight">
-                  Afterlight
-                </h2>
-                <p className="mt-3 text-xs tracking-wide opacity-85">
-                  Jonas Vale
-                </p>
-              </div>
-              <p className="text-[10px] uppercase tracking-[0.22em] opacity-80">
-                Essays
-              </p>
-            </div>
-          </article>
-        </section>
+          ))}
+        </div>
       </main>
     </div>
   );
